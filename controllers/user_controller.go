@@ -16,7 +16,7 @@ import (
 )
 
 var userCollection *mongo.Collection = configs.GetCollection(configs.DB, "users")
-var validate = validator.New()
+var validate_user = validator.New()
 
 func CreateUser() gin.HandlerFunc {
 	return func(c *gin.Context) {
@@ -31,7 +31,7 @@ func CreateUser() gin.HandlerFunc {
 		}
 
 		//use the validator library to validate required fields
-		if validationErr := validate.Struct(&user); validationErr != nil {
+		if validationErr := validate_user.Struct(&user); validationErr != nil {
 			c.JSON(http.StatusBadRequest, responses.UserResponse{Status: http.StatusBadRequest, Message: "error", Data: map[string]interface{}{"data": validationErr.Error()}})
 			return
 		}
@@ -88,7 +88,7 @@ func EditAUser() gin.HandlerFunc {
 		}
 
 		//use the validator library to validate required fields
-		if validationErr := validate.Struct(&user); validationErr != nil {
+		if validationErr := validate_user.Struct(&user); validationErr != nil {
 			c.JSON(http.StatusBadRequest, responses.UserResponse{Status: http.StatusBadRequest, Message: "error", Data: map[string]interface{}{"data": validationErr.Error()}})
 			return
 		}
