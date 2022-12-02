@@ -16,6 +16,7 @@ func main() {
 	//routes
 	routes.UserRoute(router)         //add this
 	routes.InvertebrataRoute(router) //add this
+	routes.VertebrataRoute(router)   //add this
 
 	router.Run("localhost:8080")
 }
