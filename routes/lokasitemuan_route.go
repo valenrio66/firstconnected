@@ -13,3 +13,7 @@ func LokasiTemuanRoute(router *gin.Engine) {
 	router.DELETE("/lokasitemuan/:lokasitemuanId", controllers.DeleteLokasiTemuan())
 	router.GET("/lokasitemuans", controllers.GetAllLokasiTemuans())
 }
+
+func KoordinatRoute(router *gin.Engine) {
+	router.GET("/koordinat/:longitude/:latitude", controllers.GetKoordinat())
+}

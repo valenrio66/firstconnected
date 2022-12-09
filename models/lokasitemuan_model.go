@@ -10,3 +10,29 @@ type LokasiTemuan struct {
 	Kota      string             `json:"kota,omitempty" bson:"kota,omitempty"`
 	Provinsi  string             `json:"provinsi,omitempty" bson:"provinsi,omitempty"`
 }
+
+type Geometry struct {
+	Type        string      `json:"type" bson:"type"`
+	Coordinates interface{} `json:"coordinates" bson:"coordinates"`
+}
+
+type Desa struct {
+	ID           primitive.ObjectID `bson:"_id,omitempty"`
+	Province     string             `bson:"province,omitempty"`
+	District     string             `bson:"district,omitempty"`
+	Sub_district string             `bson:"sub_district,omitempty"`
+	Village      string             `bson:"village,omitempty"`
+	Border       Geometry           `bson:"border,omitempty"`
+}
+
+type Koordinat struct {
+	Longitude int64 `json:"longitude,omitempty" bson:"longitude,omitempty"`
+	Latitude  int64 `json:"latitude,omitempty" bson:"latitude,omitempty"`
+}
+
+type MongoGeometry struct {
+	MongoString    string
+	DBName         string
+	CollectionName string
+	LocationField  string
+}

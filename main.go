@@ -19,6 +19,7 @@ func main() {
 	routes.VertebrataRoute(router)   //add this
 	routes.FosilRoute(router)        //add this
 	routes.LokasiTemuanRoute(router)
+	routes.KoordinatRoute(router)
 
 	router.Run("localhost:8080")
 }
