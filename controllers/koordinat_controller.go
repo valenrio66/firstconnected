@@ -16,12 +16,12 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-var desaCollection *mongo.Collection = configs.GetCollection(configs.DB, "desa")
+var villagesCollection *mongo.Collection = configs.GetCollection(configs.DB, "villages")
 
 func GetKoordinat() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-		var desa models.Desa
+		var villages models.Villages
 		longitude := c.Param("longitude")
 		long, _ := strconv.ParseFloat(longitude, 64)
 		latitude := c.Param("latitude")
@@ -40,12 +40,12 @@ func GetKoordinat() gin.HandlerFunc {
 		}
 		fmt.Print("Ini inputan long", long)
 		fmt.Print("Ini inputan lat", lat)
-		err := desaCollection.FindOne(ctx, filter).Decode(&desa)
+		err := villagesCollection.FindOne(ctx, filter).Decode(&villages)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, responses.KoordinatResponse{Status: http.StatusInternalServerError, Message: "error", Data: map[string]interface{}{"data": err.Error()}})
 			return
 		}
 
-		c.JSON(http.StatusOK, responses.KoordinatResponse{Status: http.StatusOK, Message: "success", Data: map[string]interface{}{"data": desa}})
+		c.JSON(http.StatusOK, responses.KoordinatResponse{Status: http.StatusOK, Message: "success", Data: map[string]interface{}{"data": villages}})
 	}
 }

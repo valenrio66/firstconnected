@@ -16,7 +16,7 @@ type Geometry struct {
 	Coordinates interface{} `json:"coordinates" bson:"coordinates"`
 }
 
-type Desa struct {
+type Villages struct {
 	ID           primitive.ObjectID `bson:"_id,omitempty"`
 	Province     string             `bson:"province,omitempty"`
 	District     string             `bson:"district,omitempty"`
