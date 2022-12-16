@@ -2,8 +2,7 @@ package main
 
 import (
 	"context"
-	"log"
-	"net/http"
+	"os"
 
 	"gin-mongo-api/configs"
 	"gin-mongo-api/controllers"
@@ -30,17 +29,11 @@ var (
 	AuthRouteController routes.AuthRouteController
 )
 
-func init() {
-	configs, err := configs.LoadConfig(".")
-	_ = configs
-	if err != nil {
-		log.Fatal("Could not load environment variables", err)
-	}
+func main() {
+	router := gin.Default()
 
-	ctx = context.TODO()
+	configs.ConnectDB()
 
-	// Collections
-	authCollection = mongoclient.Database("dbmuseum").Collection("user")
 	userService = services.NewUserServiceImpl(authCollection, ctx)
 	authService = services.NewAuthService(authCollection, ctx)
 	AuthController = controllers.NewAuthController(authService, userService)
@@ -49,30 +42,18 @@ func init() {
 	UserController = controllers.NewUserController(userService)
 	UserRouteController = routes.NewRouteUserController(UserController)
 
-	server = gin.Default()
-}
-
-func main() {
-	configs, err := configs.LoadConfig(".")
-
-	if err != nil {
-		log.Fatal("Could not load config", err)
-	}
-
-	defer mongoclient.Disconnect(ctx)
-
 	corsConfig := cors.DefaultConfig()
 	corsConfig.AllowOrigins = []string{"https://localhost:8888", "http://localhost:3000"}
 	corsConfig.AllowCredentials = true
 
 	server.Use(cors.New(corsConfig))
+	router.Run(":" + SetPort())
+}
 
-	router := server.Group("/api")
-	router.GET("/healthchecker", func(ctx *gin.Context) {
-		ctx.JSON(http.StatusOK, gin.H{"status": "success"})
-	})
-
-	AuthRouteController.AuthRoute(router, userService)
-	UserRouteController.UserRoute(router, userService)
-	log.Fatal(server.Run(":" + configs.Port))
+func SetPort() string {
+	port := os.Getenv("PORT")
+	if len(port) == 0 {
+		port = "80"
+	}
+	return port
 }
