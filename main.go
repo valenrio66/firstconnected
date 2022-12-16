@@ -1,11 +1,26 @@
 package main
 
 import (
+	"context"
 	"gin-mongo-api/configs"
+	"gin-mongo-api/controllers"
 	"gin-mongo-api/routes" //add this
+	"gin-mongo-api/services"
 	"os"
 
 	"github.com/gin-gonic/gin"
+	"go.mongodb.org/mongo-driver/mongo"
+)
+
+var (
+	ctx                 context.Context
+	userService         services.UserService
+	UserController      controllers.UserController
+	UserRouteController routes.UserRouteController
+	authCollection      *mongo.Collection
+	authService         services.AuthService
+	AuthController      controllers.AuthController
+	AuthRouteController routes.AuthRouteController
 )
 
 func main() {
@@ -22,6 +37,13 @@ func main() {
 	routes.SumberDayaGeologiRoute(router) //add this
 	routes.LokasiTemuanRoute(router)      //add this
 	routes.KoordinatRoute(router)         //add this
+	userService = services.NewUserServiceImpl(authCollection, ctx)
+	authService = services.NewAuthService(authCollection, ctx)
+	AuthController = controllers.NewAuthController(authService, userService)
+	AuthRouteController = routes.NewAuthRouteController(AuthController)
+
+	UserController = controllers.NewUserController(userService)
+	UserRouteController = routes.NewRouteUserController(UserController)
 
 	router.Run(":" + SetPort())
 }
