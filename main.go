@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"os"
 
 	// "net/http"
 
@@ -20,6 +21,7 @@ import (
 )
 
 var (
+	err         error
 	server      *gin.Engine
 	ctx         context.Context
 	mongoclient *mongo.Client
@@ -71,7 +73,7 @@ func init() {
 }
 
 func main() {
-	configs, err := configs.LoadConfig(".")
+	// configs, err := configs.LoadConfig(".")
 
 	if err != nil {
 		log.Fatal("Could not load config", err)
@@ -92,7 +94,6 @@ func main() {
 
 	// AuthRouteController.AuthRoute(router, userService)
 	// UserRouteController.UserRoute(router, userService)
-	log.Fatal(server.Run(":" + configs.Port))
 
 	router := gin.Default()
 	routes.InvertebrataRoute(router)      //add this
@@ -102,4 +103,14 @@ func main() {
 	routes.SumberDayaGeologiRoute(router) //add this
 	routes.LokasiTemuanRoute(router)      //add this
 	routes.KoordinatRoute(router)         //add this
+
+	router.Run(":" + SetPort())
+}
+
+func SetPort() string {
+	port := os.Getenv("PORT")
+	if len(port) == 0 {
+		port = "80"
+	}
+	return port
 }
