@@ -4,9 +4,6 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"os"
-
-	// "net/http"
 
 	"gin-mongo-api/configs"
 	"gin-mongo-api/controllers"
@@ -21,7 +18,7 @@ import (
 )
 
 var (
-	err         error
+	// err         error
 	server      *gin.Engine
 	ctx         context.Context
 	mongoclient *mongo.Client
@@ -30,8 +27,8 @@ var (
 	UserController      controllers.UserController
 	UserRouteController routes.UserRouteController
 
-	authCollection      *mongo.Collection
-	authService         services.AuthService
+	// authCollection      *mongo.Collection
+	// authService         services.AuthService
 	AuthController      controllers.AuthController
 	AuthRouteController routes.AuthRouteController
 )
@@ -60,20 +57,20 @@ func init() {
 	fmt.Println("MongoDB successfully connected...")
 
 	// Collections
-	authCollection = mongoclient.Database("dbmuseum").Collection("user")
-	userService = services.NewUserServiceImpl(authCollection, ctx)
-	authService = services.NewAuthService(authCollection, ctx)
-	AuthController = controllers.NewAuthController(authService, userService)
-	AuthRouteController = routes.NewAuthRouteController(AuthController)
+	// authCollection = mongoclient.Database("dbmuseum").Collection("user")
+	// userService = services.NewUserServiceImpl(authCollection, ctx)
+	// authService = services.NewAuthService(authCollection, ctx)
+	// AuthController = controllers.NewAuthController(authService, userService)
+	// AuthRouteController = routes.NewAuthRouteController(AuthController)
 
-	UserController = controllers.NewUserController(userService)
-	UserRouteController = routes.NewRouteUserController(UserController)
+	// UserController = controllers.NewUserController(userService)
+	// UserRouteController = routes.NewRouteUserController(UserController)
 
-	server = gin.Default()
+	// server = gin.Default()
 }
 
 func main() {
-	// configs, err := configs.LoadConfig(".")
+	configs, err := configs.LoadConfig(".")
 
 	if err != nil {
 		log.Fatal("Could not load config", err)
@@ -87,30 +84,31 @@ func main() {
 
 	server.Use(cors.New(corsConfig))
 
-	// router := server.Group("/api")
+	router := server.Group("/api")
 	// router.GET("/healthchecker", func(ctx *gin.Context) {
 	// 	ctx.JSON(http.StatusOK, gin.H{"status": "success"})
 	// })
 
-	// AuthRouteController.AuthRoute(router, userService)
-	// UserRouteController.UserRoute(router, userService)
+	AuthRouteController.AuthRoute(router, userService)
+	UserRouteController.UserRoute(router, userService)
+	log.Fatal(server.Run(":" + configs.Port))
 
-	router := gin.Default()
-	routes.InvertebrataRoute(router)      //add this
-	routes.VertebrataRoute(router)        //add this
-	routes.FosilRoute(router)             //add this
-	routes.BatuanRoute(router)            //add this
-	routes.SumberDayaGeologiRoute(router) //add this
-	routes.LokasiTemuanRoute(router)      //add this
-	routes.KoordinatRoute(router)         //add this
+	// router = gin.Default()
+	// routes.InvertebrataRoute(router)      //add this
+	// routes.VertebrataRoute(router)        //add this
+	// routes.FosilRoute(router)             //add this
+	// routes.BatuanRoute(router)            //add this
+	// routes.SumberDayaGeologiRoute(router) //add this
+	// routes.LokasiTemuanRoute(router)      //add this
+	// routes.KoordinatRoute(router)         //add this
 
-	router.Run(":" + SetPort())
+	// router.Run(":" + SetPort())
 }
 
-func SetPort() string {
-	port := os.Getenv("PORT")
-	if len(port) == 0 {
-		port = "80"
-	}
-	return port
-}
+// func SetPort() string {
+// 	port := os.Getenv("PORT")
+// 	if len(port) == 0 {
+// 		port = "80"
+// 	}
+// 	return port
+// }
