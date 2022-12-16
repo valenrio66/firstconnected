@@ -4,7 +4,8 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"net/http"
+
+	// "net/http"
 
 	"gin-mongo-api/configs"
 	"gin-mongo-api/controllers"
@@ -84,21 +85,21 @@ func main() {
 
 	server.Use(cors.New(corsConfig))
 
-	// router := gin.Default()
-	router := server.Group("/api")
-	router.GET("/healthchecker", func(ctx *gin.Context) {
-		ctx.JSON(http.StatusOK, gin.H{"status": "success"})
-	})
+	// router := server.Group("/api")
+	// router.GET("/healthchecker", func(ctx *gin.Context) {
+	// 	ctx.JSON(http.StatusOK, gin.H{"status": "success"})
+	// })
 
-	AuthRouteController.AuthRoute(router, userService)
-	UserRouteController.UserRoute(router, userService)
+	// AuthRouteController.AuthRoute(router, userService)
+	// UserRouteController.UserRoute(router, userService)
 	log.Fatal(server.Run(":" + configs.Port))
 
-	// routes.InvertebrataRoute(router)      //add this
-	// routes.VertebrataRoute(router)        //add this
-	// routes.FosilRoute(router)             //add this
-	// routes.BatuanRoute(router)            //add this
-	// routes.SumberDayaGeologiRoute(router) //add this
-	// routes.LokasiTemuanRoute(router)      //add this
-	// routes.KoordinatRoute(router)         //add this
+	router := gin.Default()
+	routes.InvertebrataRoute(router)      //add this
+	routes.VertebrataRoute(router)        //add this
+	routes.FosilRoute(router)             //add this
+	routes.BatuanRoute(router)            //add this
+	routes.SumberDayaGeologiRoute(router) //add this
+	routes.LokasiTemuanRoute(router)      //add this
+	routes.KoordinatRoute(router)         //add this
 }
