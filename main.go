@@ -27,8 +27,8 @@ var (
 	UserController      controllers.UserController
 	UserRouteController routes.UserRouteController
 
-	// authCollection      *mongo.Collection
-	// authService         services.AuthService
+	authCollection      *mongo.Collection
+	authService         services.AuthService
 	AuthController      controllers.AuthController
 	AuthRouteController routes.AuthRouteController
 )
@@ -57,16 +57,16 @@ func init() {
 	fmt.Println("MongoDB successfully connected...")
 
 	// Collections
-	// authCollection = mongoclient.Database("dbmuseum").Collection("user")
-	// userService = services.NewUserServiceImpl(authCollection, ctx)
-	// authService = services.NewAuthService(authCollection, ctx)
-	// AuthController = controllers.NewAuthController(authService, userService)
-	// AuthRouteController = routes.NewAuthRouteController(AuthController)
+	authCollection = mongoclient.Database("dbmuseum").Collection("user")
+	userService = services.NewUserServiceImpl(authCollection, ctx)
+	authService = services.NewAuthService(authCollection, ctx)
+	AuthController = controllers.NewAuthController(authService, userService)
+	AuthRouteController = routes.NewAuthRouteController(AuthController)
 
-	// UserController = controllers.NewUserController(userService)
-	// UserRouteController = routes.NewRouteUserController(UserController)
+	UserController = controllers.NewUserController(userService)
+	UserRouteController = routes.NewRouteUserController(UserController)
 
-	// server = gin.Default()
+	server = gin.Default()
 }
 
 func main() {
