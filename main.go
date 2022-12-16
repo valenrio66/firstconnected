@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"net/http"
 
@@ -14,8 +13,6 @@ import (
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
-	"go.mongodb.org/mongo-driver/mongo/readpref"
 )
 
 var (
@@ -41,20 +38,6 @@ func init() {
 	}
 
 	ctx = context.TODO()
-
-	// Connect to MongoDB
-	mongoconn := options.Client().ApplyURI("mongodb+srv://valenrionald:06082002@cluster0.c9pmzz0.mongodb.net/?retryWrites=true&w=majority")
-	mongoclient, err := mongo.Connect(ctx, mongoconn)
-
-	if err != nil {
-		panic(err)
-	}
-
-	if err := mongoclient.Ping(ctx, readpref.Primary()); err != nil {
-		panic(err)
-	}
-
-	fmt.Println("MongoDB successfully connected...")
 
 	// Collections
 	authCollection = mongoclient.Database("dbmuseum").Collection("user")
