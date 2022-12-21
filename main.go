@@ -1,93 +1,66 @@
 package main
 
 import (
-
-	//add this
-	"context"
-	"log"
-	"net/http"
-
 	"gin-mongo-api/configs"
-	"gin-mongo-api/controllers"
-	"gin-mongo-api/routes"
-	"gin-mongo-api/services"
+	"gin-mongo-api/routes" //add this
+	"os"
+
+	"time"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
-	"go.mongodb.org/mongo-driver/mongo"
 )
 
-var (
-	server      *gin.Engine
-	ctx         context.Context
-	mongoclient *mongo.Client
+// func CORSMiddleware() gin.HandlerFunc {
+// 	return func(c *gin.Context) {
+// 		c.Writer.Header().Set("Access-Control-Allow-Origin", "https://resplendent-dragon-4ca5a6.netlify.app")
+// 		c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
+// 		c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, accept, origin, Cache-Control, X-Requested-With")
+// 		c.Writer.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS, GET, PUT, DELETE")
 
-	userService         services.UserService
-	UserController      controllers.UserController
-	UserRouteController routes.UserRouteController
+// 		if c.Request.Method == "https://sbc-sebatcabut.herokuapp.com" {
+// 			c.AbortWithStatus(204)
+// 			return
+// 		}
 
-	authCollection      *mongo.Collection
-	authService         services.AuthService
-	AuthController      controllers.AuthController
-	AuthRouteController routes.AuthRouteController
-)
+// 		c.Next()
+// 	}
+// }
 
 func main() {
-	configs, err := configs.LoadConfig(".")
+	configs.ConnectDB()
+	router := gin.Default()
+	// CORS for https://foo.com and https://github.com origins, allowing:
+	// - PUT and PATCH methods
+	// - Origin header
+	// - Credentials share
+	// - Preflight requests cached for 12 hours
+	router.Use(cors.New(cors.Config{
+		AllowOrigins:     []string{"https://test-gogin-react.herokuapp.com/"},
+		AllowMethods:     []string{"PUT", "PATCH", "POST", "GET", "DELETE"},
+		AllowHeaders:     []string{"Origin"},
+		ExposeHeaders:    []string{"Content-Length"},
+		AllowCredentials: true,
+		AllowOriginFunc: func(origin string) bool {
+			return origin == "https://test-gogin.herokuapp.com"
+		},
+		MaxAge: 12 * time.Hour,
+	}))
+	routes.InvertebrataRoute(router)      //add this
+	routes.VertebrataRoute(router)        //add this
+	routes.FosilRoute(router)             //add this
+	routes.BatuanRoute(router)            //add this
+	routes.SumberDayaGeologiRoute(router) //add this
+	routes.LokasiTemuanRoute(router)      //add this
+	routes.KoordinatRoute(router)         //add this
 
-	if err != nil {
-		log.Fatal("Could not load config", err)
-	}
-
-	defer mongoclient.Disconnect(ctx)
-
-	authCollection = mongoclient.Database("dbmuseum").Collection("user")
-	userService = services.NewUserServiceImpl(authCollection, ctx)
-	authService = services.NewAuthService(authCollection, ctx)
-	AuthController = controllers.NewAuthController(authService, userService)
-	AuthRouteController = routes.NewAuthRouteController(AuthController)
-
-	UserController = controllers.NewUserController(userService)
-	UserRouteController = routes.NewRouteUserController(UserController)
-
-	server = gin.Default()
-
-	corsConfig := cors.DefaultConfig()
-	corsConfig.AllowOrigins = []string{"https://localhost:8888", "http://localhost:3000"}
-	corsConfig.AllowCredentials = true
-
-	server.Use(cors.New(corsConfig))
-
-	router := server.Group("/api")
-	router.GET("/healthchecker", func(ctx *gin.Context) {
-		ctx.JSON(http.StatusOK, gin.H{"status": "success"})
-	})
-
-	AuthRouteController.AuthRoute(router, userService)
-	UserRouteController.UserRoute(router, userService)
-	log.Fatal(server.Run(":" + configs.Port))
-	// router := gin.Default()
-
-	// //run database
-	// configs.ConnectDB()
-
-	// //routes
-	// // routes.UserRoute(router)              //add this
-	// routes.InvertebrataRoute(router)      //add this
-	// routes.VertebrataRoute(router)        //add this
-	// routes.FosilRoute(router)             //add this
-	// routes.BatuanRoute(router)            //add this
-	// routes.SumberDayaGeologiRoute(router) //add this
-	// routes.LokasiTemuanRoute(router)      //add this
-	// routes.KoordinatRoute(router)         //add this
-
-	// router.Run(":" + SetPort())
+	router.Run(":" + SetPort())
 }
 
-// func SetPort() string {
-// 	port := os.Getenv("PORT")
-// 	if len(port) == 0 {
-// 		port = "80"
-// 	}
-// 	return port
-// }
+func SetPort() string {
+	port := os.Getenv("PORT")
+	if len(port) == 0 {
+		port = "80"
+	}
+	return port
+}
