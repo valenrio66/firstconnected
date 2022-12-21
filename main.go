@@ -41,6 +41,7 @@ func main() {
 
 	defer mongoclient.Disconnect(ctx)
 
+	authCollection = mongoclient.Database("dbmuseum").Collection("user")
 	userService = services.NewUserServiceImpl(authCollection, ctx)
 	authService = services.NewAuthService(authCollection, ctx)
 	AuthController = controllers.NewAuthController(authService, userService)
