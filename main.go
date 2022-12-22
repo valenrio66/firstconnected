@@ -42,7 +42,7 @@ func main() {
 		ExposeHeaders:    []string{"Content-Length"},
 		AllowCredentials: true,
 		AllowOriginFunc: func(origin string) bool {
-			return origin == "https://test-gogin.herokuapp.com"
+			return origin == "https://test-gogin.herokuapp.com/"
 		},
 		MaxAge: 12 * time.Hour,
 	}))
