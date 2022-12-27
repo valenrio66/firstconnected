@@ -49,12 +49,12 @@ func main() {
 	// 	MaxAge: 12 * time.Hour,
 	// }))
 	mux := http.NewServeMux()
-	mux.HandleFunc("/api/resource", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("https://test-gogin.herokuapp.com", func(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("This is a resource"))
 	})
 
 	handler := cors.Default().Handler(mux)
-	http.ListenAndServe(":3000", handler)
+	http.ListenAndServe(":"+os.Getenv("PORT"), handler)
 
 	routes.InvertebrataRoute(router)      //add this
 	routes.VertebrataRoute(router)        //add this
