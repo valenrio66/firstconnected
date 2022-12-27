@@ -3,11 +3,13 @@ package main
 import (
 	"gin-mongo-api/configs"
 	"gin-mongo-api/routes" //add this
+	"net/http"
 	"os"
 
-	"time"
+	// "time"
 
-	"github.com/gin-contrib/cors"
+	"github.com/rs/cors"
+	// "github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
 
@@ -35,17 +37,25 @@ func main() {
 	// - Origin header
 	// - Credentials share
 	// - Preflight requests cached for 12 hours
-	router.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"http://test-gogin-react.herokuapp.com/"},
-		AllowMethods:     []string{"PUT", "PATCH", "POST", "GET", "DELETE"},
-		AllowHeaders:     []string{"Origin"},
-		ExposeHeaders:    []string{"Content-Length"},
-		AllowCredentials: true,
-		AllowOriginFunc: func(origin string) bool {
-			return origin == "https://test-gogin.herokuapp.com/"
-		},
-		MaxAge: 12 * time.Hour,
-	}))
+	// router.Use(cors.New(cors.Config{
+	// 	AllowOrigins:     []string{"http://test-gogin-react.herokuapp.com/"},
+	// 	AllowMethods:     []string{"PUT", "PATCH", "POST", "GET", "DELETE"},
+	// 	AllowHeaders:     []string{"Origin"},
+	// 	ExposeHeaders:    []string{"Content-Length"},
+	// 	AllowCredentials: true,
+	// 	AllowOriginFunc: func(origin string) bool {
+	// 		return origin == "https://test-gogin.herokuapp.com/"
+	// 	},
+	// 	MaxAge: 12 * time.Hour,
+	// }))
+	mux := http.NewServeMux()
+	mux.HandleFunc("/api/resource", func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte("This is a resource"))
+	})
+
+	handler := cors.Default().Handler(mux)
+	http.ListenAndServe(":3000", handler)
+
 	routes.InvertebrataRoute(router)      //add this
 	routes.VertebrataRoute(router)        //add this
 	routes.FosilRoute(router)             //add this
