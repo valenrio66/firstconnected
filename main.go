@@ -2,6 +2,7 @@ package main
 
 import (
 	"gin-mongo-api/configs"
+	middleware "gin-mongo-api/middleware"
 	"gin-mongo-api/routes" //add this
 	"net/http"
 	"os"
@@ -63,6 +64,11 @@ func main() {
 	routes.SumberDayaGeologiRoute(router) //add this
 	routes.LokasiTemuanRoute(router)      //add this
 	routes.KoordinatRoute(router)         //add this
+
+	router.Use(middleware.Authentication())
+	router.GET("/", func(ctx *gin.Context) {
+		ctx.JSON(http.StatusOK, gin.H{"success": true, "data": nil, "message": "successfully login"})
+	})
 
 	router.Run(":" + SetPort())
 }
