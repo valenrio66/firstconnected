@@ -3,32 +3,48 @@ package middleware
 import (
 	"fmt"
 	"net/http"
+	"strings"
+
+	"gin-mongo-api/configs"
+	"gin-mongo-api/services"
+	"gin-mongo-api/utils"
 
 	"github.com/gin-gonic/gin"
-
-	helper "gin-mongo-api/helpers"
 )
 
-// Auth validates token and authorizes users
-func Authentication() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		clientToken := c.Request.Header.Get("token")
-		if clientToken == "" {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("No Authorization header provided")})
-			c.Abort()
+func DeserializeUser(userService services.UserService) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		var access_token string
+		cookie, err := ctx.Cookie("access_token")
+
+		authorizationHeader := ctx.Request.Header.Get("Authorization")
+		fields := strings.Fields(authorizationHeader)
+
+		if len(fields) != 0 && fields[0] == "Bearer" {
+			access_token = fields[1]
+		} else if err == nil {
+			access_token = cookie
+		}
+
+		if access_token == "" {
+			ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"status": "fail", "message": "You are not logged in"})
 			return
 		}
 
-		claims, err := helper.ValidateToken(clientToken)
-		if err != "" {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err})
-			c.Abort()
+		configs, _ := configs.LoadConfig(".")
+		sub, err := utils.ValidateToken(access_token, configs.AccessTokenPublicKey)
+		if err != nil {
+			ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"status": "fail", "message": err.Error()})
 			return
 		}
 
-		c.Set("email", claims.Email)
+		user, err := userService.FindUserById(fmt.Sprint(sub))
+		if err != nil {
+			ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"status": "fail", "message": "The user belonging to this token no logger exists"})
+			return
+		}
 
-		c.Next()
-
+		ctx.Set("currentUser", user)
+		ctx.Next()
 	}
 }
