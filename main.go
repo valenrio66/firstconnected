@@ -2,20 +2,13 @@ package main
 
 import (
 	"gin-mongo-api/configs"
-	// middleware "gin-mongo-api/middleware"
 	"gin-mongo-api/routes" //add this
-	"net/http"
 	"os"
 
-	// "time"
+	"time"
 
-	"github.com/rs/cors"
-	// "github.com/gin-contrib/cors"
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
-)
-
-var (
-	server *gin.Engine
 )
 
 // func CORSMiddleware() gin.HandlerFunc {
@@ -42,25 +35,17 @@ func main() {
 	// - Origin header
 	// - Credentials share
 	// - Preflight requests cached for 12 hours
-	// router.Use(cors.New(cors.Config{
-	// 	AllowOrigins:     []string{"http://test-gogin-react.herokuapp.com/"},
-	// 	AllowMethods:     []string{"PUT", "PATCH", "POST", "GET", "DELETE"},
-	// 	AllowHeaders:     []string{"Origin"},
-	// 	ExposeHeaders:    []string{"Content-Length"},
-	// 	AllowCredentials: true,
-	// 	AllowOriginFunc: func(origin string) bool {
-	// 		return origin == "https://test-gogin.herokuapp.com/"
-	// 	},
-	// 	MaxAge: 12 * time.Hour,
-	// }))
-	mux := http.NewServeMux()
-	mux.HandleFunc("https://test-gogin.herokuapp.com", func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("This is a resource"))
-	})
-
-	handler := cors.Default().Handler(mux)
-	http.ListenAndServe(":"+os.Getenv("PORT"), handler)
-
+	router.Use(cors.New(cors.Config{
+		AllowOrigins:     []string{"https://resplendent-dragon-4ca5a6.netlify.app", "https://batbut.github.io", "https://test-gogin-react.herokuapp.com/", "http://localhost:3000/"},
+		AllowMethods:     []string{"PUT", "PATCH", "POST", "GET", "DELETE"},
+		AllowHeaders:     []string{"Origin"},
+		ExposeHeaders:    []string{"Content-Length"},
+		AllowCredentials: true,
+		AllowOriginFunc: func(origin string) bool {
+			return origin == "https://sbc-sebatcabut.herokuapp.com"
+		},
+		MaxAge: 12 * time.Hour,
+	}))
 	routes.InvertebrataRoute(router)      //add this
 	routes.VertebrataRoute(router)        //add this
 	routes.FosilRoute(router)             //add this
