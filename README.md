@@ -26,7 +26,7 @@ func main() {
 
         router.GET("/", func(c *gin.Context) {
                 c.JSON(200, gin.H{
-                        "data": "Hello from Gin-gonic & mongoDB",
+                        "data": "Halo Dunia!",
                 })
         })
 
@@ -39,7 +39,7 @@ go run main.go
 ```
 
 6. App is running on port: 8080
-7. Test it using Thunder Client in VSCode or Using Postman with the URL is
+7. Test it using Thunder Client Extensions in VSCode or Using Postman with the URL is
 ```sh
 http://localhost:8080
 ```
