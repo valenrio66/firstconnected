@@ -3,56 +3,53 @@ package main
 import (
 	"gin-mongo-api/configs"
 	"gin-mongo-api/routes" //add this
+
 	"os"
 
 	"time"
 
+	docs "gin-mongo-api/docs"
+
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
-// func CORSMiddleware() gin.HandlerFunc {
-// 	return func(c *gin.Context) {
-// 		c.Writer.Header().Set("Access-Control-Allow-Origin", "https://resplendent-dragon-4ca5a6.netlify.app")
-// 		c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
-// 		c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, accept, origin, Cache-Control, X-Requested-With")
-// 		c.Writer.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS, GET, PUT, DELETE")
-
-// 		if c.Request.Method == "https://sbc-sebatcabut.herokuapp.com" {
-// 			c.AbortWithStatus(204)
-// 			return
-// 		}
-
-// 		c.Next()
-// 	}
-// }
-
+// @title Museum Geologi Bandung
+// @version 1.0
+// @description API Batuan, Fosil dan Sumber Daya Geologi
+// @host test-gogin.herokuapp.com
+// @BasePath /v1
 func main() {
 	configs.ConnectDB()
 	router := gin.Default()
-	// CORS for https://foo.com and https://github.com origins, allowing:
-	// - PUT and PATCH methods
-	// - Origin header
-	// - Credentials share
-	// - Preflight requests cached for 12 hours
+
+	docs.SwaggerInfo.BasePath = ""
+	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+
 	router.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"https://resplendent-dragon-4ca5a6.netlify.app", "https://batbut.github.io", "https://test-gogin-react.herokuapp.com/", "http://localhost:3000/"},
-		AllowMethods:     []string{"PUT", "PATCH", "POST", "GET", "DELETE"},
-		AllowHeaders:     []string{"Origin"},
+		AllowOrigins:     []string{"*"},
+		AllowMethods:     []string{"*"},
+		AllowHeaders:     []string{"Origin", "Content-Length", "Content-Type", "Authorization"},
 		ExposeHeaders:    []string{"Content-Length"},
 		AllowCredentials: true,
 		AllowOriginFunc: func(origin string) bool {
-			return origin == "https://sbc-sebatcabut.herokuapp.com"
+			return origin == "https://test-gogin.herokuapp.com"
 		},
 		MaxAge: 12 * time.Hour,
 	}))
+
 	routes.InvertebrataRoute(router)      //add this
 	routes.VertebrataRoute(router)        //add this
 	routes.FosilRoute(router)             //add this
 	routes.BatuanRoute(router)            //add this
 	routes.SumberDayaGeologiRoute(router) //add this
+	routes.BmnRoute(router)               //add this
 	routes.LokasiTemuanRoute(router)      //add this
 	routes.KoordinatRoute(router)         //add this
+	routes.JenisKoleksiRoute(router)      //add this
+	routes.StorageRoute(router)           //add this
 
 	router.Run(":" + SetPort())
 }
